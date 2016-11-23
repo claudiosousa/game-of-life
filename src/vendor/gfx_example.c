@@ -2,21 +2,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "gfx.h"
+#include "keyboard_utils.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
-
-/// If a key was pressed, returns its key code (non blocking call).
-/// List of key codes: https://wiki.libsdl.org/SDL_Keycode
-/// @return the key that was pressed or 0 if none was pressed.
-static SDL_Keycode keypress() {
-	SDL_Event event;
-	if (SDL_PollEvent(&event)) {
-		if (event.type == SDL_KEYDOWN)
-			return event.key.keysym.sym;
-	}
-	return 0;
-}
 
 /// Render some white noise.
 /// @param context graphical context to use.
@@ -41,7 +30,7 @@ int main() {
 		return EXIT_FAILURE;
 	}
 
-	while (keypress() != SDLK_ESCAPE) {
+	while (keyboard_utils_keypress() != SDLK_ESCAPE) {
 		render(ctxt);
 		gfx_present(ctxt);
 	}
