@@ -22,7 +22,6 @@ keyboard_utils.o: vendor/keyboard_utils.c vendor/keyboard_utils.h
 run: gameoflife
 	./$< 240 135 0 0.75 30 8
 
-
 clean:
 	rm -f *.o gameoflife
 	cd ./vendor/ && make clean

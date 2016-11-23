@@ -25,8 +25,7 @@ int main(int argc, char * argv[])
 
     display_t * dp = display_create("GameOfLife", screen_width, screen_height, refresh_freq);
 
-    keyboard_sync_t * kb_sync = keyboard_create();
-    keyboard_wait_end(kb_sync);
+    keyboard_create_and_wait_end();
 
     display_stop(dp);
 

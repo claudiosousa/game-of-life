@@ -13,11 +13,6 @@
 
 #define KEYBOARD_EXEC_WAIT_HZ 50
 
-struct keyboard_sync_t
-{
-    pthread_t thread;
-};
-
 /**
  * Thread that check user input in order to end the program.
  * This thread tests pressed keys at 50 Hz.
@@ -35,30 +30,17 @@ void * keyboard_thread(void * data)
     return NULL;
 }
 
-keyboard_sync_t * keyboard_create()
+void keyboard_create_and_wait_end()
 {
-    keyboard_sync_t * kb_sync = malloc(sizeof(keyboard_sync_t));
-    if (kb_sync != NULL)
+    pthread_t kb_thread;
+
+    if (pthread_create(&kb_thread, NULL, keyboard_thread, NULL) != 0)
     {
-        if (pthread_create(&kb_sync->thread, NULL, keyboard_thread, NULL) != 0)
-        {
-            perror("keyboard thread creation failed");
-        }
-    }
-    else
-    {
-        perror("keyboard malloc failed");
+        perror("keyboard thread creation failed");
     }
 
-    return kb_sync;
-}
-
-void keyboard_wait_end(keyboard_sync_t * kb_sync)
-{
-    if (pthread_join(kb_sync->thread, NULL) != 0)
+    if (pthread_join(kb_thread, NULL) != 0)
     {
         perror("keyboard thread join failed");
     }
-
-    free(kb_sync);
 }
