@@ -1,9 +1,8 @@
 FLAGS=-g -g -Wall -Wextra -std=gnu99
 LIBS=-lpthread -lSDL2
 
-gameoflife: main.c keyboard.o display.o
-	cd ./vendor/ && make
-	gcc $(FLAGS) -o $@ vendor/gfx.o vendor/keyboard_utils.o $^ $(LIBS)
+gameoflife: main.c keyboard.o display.o gfx.o keyboard_utils.o
+	gcc $(FLAGS) -o $@ $^ $(LIBS)
 
 keyboard.o: keyboard.c keyboard.h
 	gcc $(FLAGS) $< -c
@@ -11,8 +10,15 @@ keyboard.o: keyboard.c keyboard.h
 display.o: display.c display.h
 	gcc $(FLAGS) $< -c
 
+gfx.o: vendor/gfx.c vendor/gfx.h
+	gcc $(FLAGS) $< -c
+
+keyboard_utils.o: vendor/keyboard_utils.c vendor/keyboard_utils.h
+	gcc $(FLAGS) $< -c
+
 run: gameoflife
 	./$< 240 135 0 0.75 30 8
+
 
 clean:
 	rm -f *.o gameoflife
