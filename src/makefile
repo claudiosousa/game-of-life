@@ -1,13 +1,16 @@
 FLAGS=-g -g -Wall -Wextra -std=gnu99
 LIBS=-lpthread -lSDL2
 
-gameoflife: main.c keyboard.o display.o gfx.o keyboard_utils.o
+gameoflife: main.c keyboard.o display.o time.o gfx.o keyboard_utils.o
 	gcc $(FLAGS) -o $@ $^ $(LIBS)
 
 keyboard.o: keyboard.c keyboard.h
 	gcc $(FLAGS) $< -c
 
 display.o: display.c display.h
+	gcc $(FLAGS) $< -c
+
+time.o: time.c time.h
 	gcc $(FLAGS) $< -c
 
 gfx.o: vendor/gfx.c vendor/gfx.h

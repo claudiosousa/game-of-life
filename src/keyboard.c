@@ -6,10 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <unistd.h>
 #include <SDL2/SDL.h>
 #include "vendor/keyboard_utils.h"
 #include "keyboard.h"
+#include "time.h"
+
+#define KEYBOARD_EXEC_WAIT_HZ 50
 
 struct keyboard_sync_t
 {
@@ -27,7 +29,7 @@ void * keyboard_thread(void * data)
 
     while (keyboard_utils_keypress() != SDLK_ESCAPE)
     {
-        usleep(20000);
+        time_wait_freq(NULL, KEYBOARD_EXEC_WAIT_HZ);
     }
 
     return NULL;

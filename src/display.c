@@ -3,11 +3,11 @@
  * @author Claudio Sousa, Gonzalez David
  */
 
-#include "stdbool.h"
-#include "pthread.h"
-#include <unistd.h>
+#include <stdbool.h>
+#include <pthread.h>
 #include "vendor/gfx.h"
 #include "display.h"
+#include "time.h"
 
 struct display_t
 {
@@ -27,9 +27,12 @@ struct display_t
 void * display_thread(void * data)
 {
     display_t * dp = (display_t*)data;
+    struct timespec tm;
 
     while (dp->running)
     {
+        time_start(&tm);
+
         for (int i = 0; i < dp->ctxt->width*dp->ctxt->height/10; i++) {
             int x = rand() % dp->ctxt->width;
             int y = rand() % dp->ctxt->height;
@@ -38,7 +41,7 @@ void * display_thread(void * data)
         }
         gfx_present(dp->ctxt);
 
-        usleep(1000000 / dp->refresh_freq);
+        time_wait_freq(&tm, dp->refresh_freq);
     }
 
     return NULL;
