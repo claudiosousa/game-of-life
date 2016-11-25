@@ -32,12 +32,17 @@ void gol_grid_copy(gol_grid_t *dst, gol_grid_t *src) {
 void gol_grid_init(gol_grid_t *gol_grid, double seed, double alive_prob) {
     srand(seed);
 
+    memset(gol_grid->grid, 0, gol_grid->width * gol_grid->height * sizeof(bool));
+
     for (size_t x = 1; x < gol_grid->width - 1; x++)
         for (size_t y = 1; y < gol_grid->height - 1; y++)
-            gol_grid_set_alive(gol_grid, x, y, (double)rand() / RAND_MAX <= alive_prob);
+            if ((double)rand() / RAND_MAX <= alive_prob)
+                gol_grid_set_alive(gol_grid, x, y, true);
 }
 
-static size_t gol_grid_2d_to_1d(gol_grid_t *gol_grid, size_t x, size_t y) { return y * gol_grid->width + x; }
+static size_t gol_grid_2d_to_1d(gol_grid_t *gol_grid, size_t x, size_t y) {
+    return y * gol_grid->width + x;
+}
 
 bool gol_grid_get_alive(gol_grid_t *gol_grid, size_t x, size_t y) {
     return gol_grid->grid[gol_grid_2d_to_1d(gol_grid, x, y)];
