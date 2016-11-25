@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include "time.h"
+#include "time_wait.h"
 
 static const double NANOSECONDS_IN_SECOND = 1000000000;
 static const double MICROSECONDS_IN_SECOND = 1000000;

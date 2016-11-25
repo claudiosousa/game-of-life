@@ -9,7 +9,7 @@
 #include <SDL2/SDL.h>
 #include "vendor/keyboard_utils.h"
 #include "keyboard.h"
-#include "time.h"
+#include "time_wait.h"
 
 #define KEYBOARD_EXEC_WAIT_HZ 50
 

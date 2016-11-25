@@ -22,6 +22,9 @@ int main(int argc, char * argv[])
     int grid_p = atoi(argv[4]);
     int refresh_freq = atoi(argv[5]);
     int grid_worker = atoi(argv[6]);
+    (void)grid_worker;
+    (void)grid_p;
+    (void)grid_seed;
 
     display_t * dp = display_create("GameOfLife", screen_width, screen_height, refresh_freq);
 

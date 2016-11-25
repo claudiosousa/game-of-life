@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include "vendor/gfx.h"
 #include "display.h"
-#include "time.h"
+#include "time_wait.h"
 
 struct display_t
 {

@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "gol_grid.h"
 
 struct gol_grid_t {
@@ -22,23 +24,35 @@ gol_grid_t *gol_grid_create(size_t width, size_t height) {
     return gol_grid;
 }
 
-void gol_grid_copy(gol_grid_t *gol_grid_dst, gol_grid_t *gol_grid_src) {
-    if (memcpy(gol_grid_dst->grid, gol_grid_dst->grid, width * height * sizeof(bool)) == NULL)
-        perror("Failled to copy grids");
+void gol_grid_copy(gol_grid_t *dst, gol_grid_t *src) {
+    if (memcpy(dst->grid, src->grid, src->width * src->height * sizeof(bool)) == NULL)
+        perror("Failled to copy grid");
 }
 
 void gol_grid_init(gol_grid_t *gol_grid, double seed, double alive_prob) {
     srand(seed);
 
-    for (int x = 1; x < gol_grid->width - 1; x++) {
-        for (int y = 1; y < gol_grid->height - 1; y++) {
-            gol_grid_set_state(gol_grid, x, y, ((double)rand() / RAND_MAX) >= alive_prob)
-        }
-    }
+    for (size_t x = 1; x < gol_grid->width - 1; x++)
+        for (size_t y = 1; y < gol_grid->height - 1; y++)
+            gol_grid_set_alive(gol_grid, x, y, (double)rand() / RAND_MAX <= alive_prob);
 }
 
-// bool gol_grid_get_next_state(gol_t *gol_grid, double seed, double alive_prob);
-bool gol_grid_is_alive(gol_grid_t *gol_grid, size_t x, size_t y);
-void gol_grid_get_size(gol_grid_t *gol_grid, size_t *x, size_t *y);
-// neightbours, set_state, get_state
-void gol_grid_free(gol_grid_t *gol_grid)
+static size_t gol_grid_2d_to_1d(gol_grid_t *gol_grid, size_t x, size_t y) { return y * gol_grid->width + x; }
+
+bool gol_grid_get_alive(gol_grid_t *gol_grid, size_t x, size_t y) {
+    return gol_grid->grid[gol_grid_2d_to_1d(gol_grid, x, y)];
+}
+
+void gol_grid_set_alive(gol_grid_t *gol_grid, size_t x, size_t y, bool alive) {
+    gol_grid->grid[gol_grid_2d_to_1d(gol_grid, x, y)] = alive;
+}
+
+void gol_grid_get_size(gol_grid_t *gol_grid, size_t *width, size_t *height) {
+    *width = gol_grid->width;
+    *height = gol_grid->height;
+}
+
+void gol_grid_free(gol_grid_t *gol_grid) {
+    free(gol_grid->grid);
+    free(gol_grid);
+}
