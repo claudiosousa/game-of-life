@@ -6,6 +6,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+#include "gol_grid.h"
+
 typedef struct display_t display_t;
 
 /**
@@ -16,12 +18,13 @@ typedef struct display_t display_t;
  * @param refresh_freq
  * @return Newly created display for synchonisation purpose
  */
-display_t * display_create(char * window_title, int screen_width, int screen_height, int refresh_freq);
+display_t *display_create(char *window_title, gol_grid_t **grid, int refresh_freq, pthread_barrier_t *wait_workers,
+                          pthread_barrier_t *wait_display);
 
 /**
  * Stop the display thread and free the resources
  * @param dp Display to stop and free
  */
-void display_stop(display_t * dp);
+void display_stop(display_t *dp);
 
 #endif

@@ -6,7 +6,8 @@
 struct gol_worker_t {
     pthread_t *threads;
     gol_grid_t *grid;
-    pthread_barrier_t *worker_barrier;
+    gol_grid_t *temp_grid;
+    pthread_barrier_t *wait_workers;
     pthread_barrier_t *display_barrier;
     int workers;
     bool *working;
@@ -19,7 +20,7 @@ void *gol_worker_thread(void *t_param) {
     return NULL;
 }
 
-gol_worker_t *gol_worker_start(gol_grid_t *grid, pthread_barrier_t *worker_barrier, pthread_barrier_t *display_barrier,
+gol_worker_t *gol_worker_start(gol_grid_t **grid, pthread_barrier_t *wait_workers, pthread_barrier_t *wait_display,
                                int workers) {
     if (workers < 1) {
         fprintf(stderr, "'workers' must be >= 1. Defaulted to 1");
@@ -33,9 +34,13 @@ gol_worker_t *gol_worker_start(gol_grid_t *grid, pthread_barrier_t *worker_barri
     if (gol_worker == NULL)
         perror("gol_worker->threads malloc failed");
 
-    gol_worker->grid = grid;
-    gol_worker->worker_barrier = worker_barrier;
-    gol_worker->display_barrier = display_barrier;
+    size_t width, height;
+    gol_grid_get_size(*grid, &width, &height);
+
+    gol_worker->grid = *grid;
+    gol_worker->temp_grid = gol_grid_create(width, height);
+    gol_worker->wait_workers = wait_workers;
+    gol_worker->display_barrier = wait_display;
     gol_worker->workers = workers;
     gol_worker->working = malloc(sizeof(bool));
     *gol_worker->working = true;
@@ -53,6 +58,8 @@ void gol_worker_stop(gol_worker_t *gol_worker) {
     for (int i = 0; i < gol_worker->workers; ++i)
         if (pthread_join(gol_worker->threads[i], NULL) != 0)
             perror("pthread_join gol_worker->thread failed");
+
+    gol_grid_free(gol_worker->temp_grid);
 
     free(gol_worker->working);
     free(gol_worker->threads);

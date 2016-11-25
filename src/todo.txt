@@ -1,1 +1,7 @@
 gol_worker_t->thread should be a pointer?
+confirm ESC to stop app
+do not expose display char * window_title,
+dispose barriers
+consider use a single barrier
+verify flow on perror
+add "Press ESC key to exit..."

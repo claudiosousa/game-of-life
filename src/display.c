@@ -9,9 +9,8 @@
 #include "display.h"
 #include "time_wait.h"
 
-struct display_t
-{
-    struct gfx_context_t * ctxt;
+struct display_t {
+    struct gfx_context_t *ctxt;
     int screen_width;
     int screen_height;
     int refresh_freq;
@@ -24,19 +23,17 @@ struct display_t
  * Display thread that show the current generated grid
  * @param data Display data
  */
-void * display_thread(void * data)
-{
-    display_t * dp = (display_t*)data;
+void *display_thread(void *data) {
+    display_t *dp = (display_t *)data;
     struct timespec tm;
 
-    while (dp->running)
-    {
+    while (dp->running) {
         time_start(&tm);
 
-        for (int i = 0; i < dp->ctxt->width*dp->ctxt->height/10; i++) {
+        for (int i = 0; i < dp->ctxt->width * dp->ctxt->height / 10; i++) {
             int x = rand() % dp->ctxt->width;
             int y = rand() % dp->ctxt->height;
-            uint32_t color = MAKE_COLOR(rand() % 256,rand() % 256,rand() % 256);
+            uint32_t color = MAKE_COLOR(rand() % 256, rand() % 256, rand() % 256);
             gfx_putpixel(dp->ctxt, x, y, color);
         }
         gfx_present(dp->ctxt);
@@ -47,35 +44,35 @@ void * display_thread(void * data)
     return NULL;
 }
 
-display_t * display_create(char * window_title, int screen_width, int screen_height, int refresh_freq)
-{
-    display_t * dp = malloc(sizeof(display_t));
-    if (dp != NULL)
-    {
+display_t *display_create(char *window_title, gol_grid_t **grid, int refresh_freq, pthread_barrier_t *wait_workers,
+                          pthread_barrier_t *wait_display) {
+    (void)wait_workers;
+    (void)wait_display;
+    display_t *dp = malloc(sizeof(display_t));
+
+    if (dp != NULL) {
+        size_t screen_width, screen_height;
+        gol_grid_get_size(*grid, &screen_width, &screen_height);
+
         dp->ctxt = gfx_create(window_title, screen_width, screen_height);
         dp->screen_width = screen_width;
         dp->screen_height = screen_height;
         dp->refresh_freq = refresh_freq;
         dp->running = true;
 
-        if (pthread_create(&dp->thread, NULL, display_thread, dp) != 0)
-        {
+        if (pthread_create(&dp->thread, NULL, display_thread, dp) != 0) {
             perror("display thread creation failed");
         }
-    }
-    else
-    {
+    } else {
         perror("display malloc failed");
     }
 
     return dp;
 }
 
-void display_stop(display_t * dp)
-{
+void display_stop(display_t *dp) {
     dp->running = false;
-    if (pthread_join(dp->thread, NULL) != 0)
-    {
+    if (pthread_join(dp->thread, NULL) != 0) {
         perror("display thread join failed");
     }
 
