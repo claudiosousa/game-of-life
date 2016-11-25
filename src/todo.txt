@@ -1,0 +1,1 @@
+gol_worker_t->thread should be a pointer?
