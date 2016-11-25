@@ -1,0 +1,149 @@
+\documentclass[11pt, a4paper]{article}
+
+% Packages
+\usepackage[francais]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{hyperref}
+
+\usepackage{float}
+
+\usepackage{graphicx}
+\graphicspath{{./img/}}
+\usepackage{tikz}
+\usepackage{pgfgantt}
+\usepackage{dirtree}
+
+\usepackage{color}
+\usepackage{colortbl}
+
+\usepackage{listings}
+
+\usepackage{makeidx}
+
+\usepackage{csvsimple}
+
+% Index -----------------------------------------------------------------------
+\makeindex
+\makeatletter
+\renewenvironment{theindex}
+{
+    \thispagestyle{fancy}
+    \setlength{\parindent}{0pt}
+    \let
+    \item
+    \@idxitem
+}{\onecolumn}
+\makeatother
+
+% Listings --------------------------------------------------------------------
+\lstset{
+    basicstyle=\ttfamily\small,
+    stringstyle=\ttfamily\color{green!50!black},
+    keywordstyle=\bfseries\color{blue},
+    commentstyle=\itshape\color{red!50!black},
+    showstringspaces=true,
+    tabsize=4,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    firstnumber=1,
+    stepnumber=1,
+    numbersep=5pt,
+    breaklines=true
+}
+
+%\lstdefinelanguage{LanguageName}{
+%    keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with, prototype},
+%    morecomment=[l]{//},
+%    morecomment=[s]{/*}{*/},
+%    morestring=[b]',
+%    morestring=[b]",
+%    sensitive=true
+%}
+
+% Reset paragraph indentation -------------------------------------------------
+\setlength{\parindent}{0cm}
+
+% Allow a paragraph to have a linebreak ---------------------------------------
+\newcommand{\paragraphnl}[1]{\paragraph{#1}\mbox{}\\}
+
+% Page header and footer ------------------------------------------------------
+\pagestyle{fancy}
+\setlength{\headheight}{33pt}
+\renewcommand{\headrulewidth}{0.5pt}
+\lhead{\includegraphics[height=1cm]{hepia.jpg}}
+\chead{Game of Life}
+\rhead{Claudio Sousa - David Gonzalez}
+\renewcommand{\footrulewidth}{0.5pt}
+\lfoot{11 décembre 2016}
+\cfoot{}
+\rfoot{Page \thepage /\pageref{LastPage}}
+
+% Table of contents depth -----------------------------------------------------
+\setcounter{tocdepth}{3}
+
+% Document --------------------------------------------------------------------
+\begin{document}
+
+\title
+{
+    \Huge{Programmation concurrente} \\
+    \Huge{Game of Life}
+}
+\author
+{
+    \LARGE{Claudio Sousa - David Gonzalez}
+}
+\date{11 décembre 2016}
+\maketitle
+
+\begin{center}
+    Image...%\includegraphics[scale=0.5]{image}
+\end{center}
+
+\thispagestyle{empty}
+
+\newpage
+
+% -----------------------------------------------------------------------------
+\section{Introduction}
+\subsection{Énoncé}
+
+\newpage
+
+% -----------------------------------------------------------------------------
+\section{Development}
+\subsection{Architecture}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=0.65]{gol_modules.png}
+    \end{center}
+    \caption{Architecture du Game of Life}
+    \label{Architecture du Game of Life}
+\end{figure}
+
+\newpage
+
+% -----------------------------------------------------------------------------
+\subsection{Concurrence et parallélisme}
+\subsubsection{Traitement du Game of Life}
+
+\subsubsection{Affichage}
+
+\subsubsection{Terminaison}
+
+\newpage
+
+% -----------------------------------------------------------------------------
+\subsection{Méthodologie de travail}
+\subsubsection{Répartition du travail}
+
+\newpage
+
+\end{document}
