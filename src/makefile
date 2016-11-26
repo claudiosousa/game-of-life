@@ -1,7 +1,7 @@
 FLAGS=-g -Wall -Wextra -std=gnu99
 LIBS=-lpthread -lSDL2
 
-gameoflife: main.c keyboard.o display.o time_wait.o gfx.o keyboard_utils.o gol_grid.o gol_worker.o
+gameoflife: main.c keyboard.o display.o time_wait.o gfx.o keyboard_utils.o gol.o
 	gcc $(FLAGS) -o $@ $^ $(LIBS)
 
 keyboard.o: keyboard.c keyboard.h
@@ -10,10 +10,7 @@ keyboard.o: keyboard.c keyboard.h
 display.o: display.c display.h
 	gcc $(FLAGS) $< -c
 
-gol_grid.o: gol_grid.c gol_grid.h
-	gcc $(FLAGS) $< -c
-
-gol_worker.o: gol_worker.c gol_worker.h
+gol.o: gol.c gol.h
 	gcc $(FLAGS) $< -c
 
 time_wait.o: time_wait.c time_wait.h

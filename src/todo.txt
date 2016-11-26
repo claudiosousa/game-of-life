@@ -3,5 +3,11 @@ confirm ESC to stop app
 do not expose display char * window_title,
 dispose barriers
 consider use a single barrier
-verify flow on perror
+verify flow on perror. Ask prof about best practices
 add "Press ESC key to exit..."
+add in document multi-threaded flow synchronization
+can use PTHREAD_BARRIER_SERIAL_THREAD?
+use memcpy in gfx graphics vector?
+ask teacher: wrap grid into globe?
+
+RACONG CONDITIONS AT BIGGER SCREEN SIZES???

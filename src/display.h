@@ -1,12 +1,12 @@
 /**
- * Display the grid from another thread.
+ * Display the gol from another thread.
  * @author Claudio Sousa, Gonzalez David
  */
 
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "gol_grid.h"
+#include "gol.h"
 
 typedef struct display_t display_t;
 
@@ -18,8 +18,7 @@ typedef struct display_t display_t;
  * @param refresh_freq
  * @return Newly created display for synchonisation purpose
  */
-display_t *display_create(char *window_title, gol_grid_t **grid, int refresh_freq, pthread_barrier_t *wait_workers,
-                          pthread_barrier_t *wait_display);
+display_t *display_create(char *window_title, gol_t *gol, int refresh_freq);
 
 /**
  * Stop the display thread and free the resources
