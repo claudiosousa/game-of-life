@@ -32,5 +32,8 @@ void time_wait_freq(struct timespec *start_time, int frequency)
         }
     }
 
-    usleep(wait_time);
+    if (wait_time > 0)
+    {
+        usleep(wait_time);
+    }
 }
