@@ -11,3 +11,5 @@ use memcpy in gfx graphics vector?
 ask teacher: wrap grid into globe?
 
 RACONG CONDITIONS AT BIGGER SCREEN SIZES???
+
+comment: gol_work_sync and gol_set_frame_rendered_state

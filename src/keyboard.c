@@ -30,6 +30,9 @@ void * keyboard_thread(void * data)
     return NULL;
 }
 
+/**
+ * Create a thread for keyboard and wait for it to end
+ */
 void keyboard_create_and_wait_end()
 {
     pthread_t kb_thread;

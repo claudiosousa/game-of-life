@@ -10,12 +10,12 @@
 #include "time_wait.h"
 
 struct display_t {
-    struct gfx_context_t *ctxt;
     size_t screen_width;
     size_t screen_height;
     int refresh_freq;
-    gol_t *gol;
 
+    struct gfx_context_t *ctxt;
+    gol_t *gol;
     pthread_t thread;
 };
 
@@ -28,7 +28,7 @@ void *display_thread(void *data) {
     struct timespec tm;
 
     do {
-        time_start(&tm);
+        time_wait_start(&tm);
 
         for (size_t x = 0; x < dp->screen_width; ++x)
             for (size_t y = 0; y < dp->screen_height; ++y)

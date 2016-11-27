@@ -9,11 +9,20 @@
 
 static const double MICROSECONDS_IN_SECOND = 1000000;
 
-void time_start(struct timespec *tm) {
+/**
+ * Starts a time wait
+ * @param tm Structure to hold the starting time
+ */
+void time_wait_start(struct timespec *tm) {
     if (clock_gettime(CLOCK_MONOTONIC, tm) != 0)
         perror("Time start failed");
 }
 
+/**
+ * Make the calling thread wait the time remaining
+ * @param start_time Starting time
+ * @param frequency Expected execution freqeuncy in Hz
+ */
 void time_wait_freq(struct timespec *start_time, int frequency) {
     int wait_time = MICROSECONDS_IN_SECOND / frequency;
     struct timespec end_time;

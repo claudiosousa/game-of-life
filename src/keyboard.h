@@ -6,9 +6,6 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-/**
- * Create a thread for keyboard and wait for it to end
- */
 void keyboard_create_and_wait_end();
 
 #endif

@@ -1,10 +1,10 @@
 /**
- * Manipulates a memory representation of the GOL gol
+ * Manipulates a memory representation of the GoL.
  * @author Claudio Sousa, Gonzalez David
  */
 
-#ifndef GOL_GRID_H
-#define GOL_GRID_H
+#ifndef GOL_H
+#define GOL_H
 
 #include <stdbool.h>
 

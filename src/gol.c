@@ -1,7 +1,12 @@
-#include <pthread.h>
+/**
+ * Manipulates a memory representation of the GoL.
+ * @author Claudio Sousa, Gonzalez David
+ */
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+#include <pthread.h>
 #include "gol.h"
 
 struct gol_t {
@@ -25,10 +30,23 @@ typedef struct {
     int size;
 } gol_worker_t;
 
+/**
+ * Transform a 2D coordinate into a 1D one
+ * @param gol GoL data
+ * @param x First coordiate in 2D
+ * @param y Second coordiate in 2D
+ * @return 1D coordinate
+ */
 static size_t gol_2d_to_1d(gol_t *gol, size_t x, size_t y) {
     return y * gol->width + x;
 }
 
+/**
+ * Randomly initilaise a gol grid
+ * @param gol GoL data
+ * @param seed Seed for the RNG
+ * @param alive_prob Probality to have an alive cell
+ */
 static void gol_init(gol_t *gol, double seed, double alive_prob) {
     srand(seed);
 
@@ -40,14 +58,11 @@ static void gol_init(gol_t *gol, double seed, double alive_prob) {
                 gol->grid[gol_2d_to_1d(gol, x, y)] = true;
 }
 
-void gol_work_sync(gol_t *gol) {
-    pthread_barrier_wait(&gol->finished_sync);
-}
-
-bool gol_is_running(gol_t *gol) {
-    return gol->running;
-}
-
+/**
+ * ?
+ * @param gol GoL data
+ * @param rendered ?
+ */
 static void gol_set_frame_rendered_state(gol_t *gol, bool rendered) {
     if (pthread_mutex_lock(gol->rendering_state_lock) != 0)
         perror("pthread_mutex_lock failed");
@@ -63,6 +78,10 @@ static void gol_set_frame_rendered_state(gol_t *gol, bool rendered) {
         perror("pthread_mutex_unlock failed");
 }
 
+/**
+ * Update all cells by firstly getting the cell neighbours and then applying rules
+ * @param worker Worker data, containing the GoL data
+ */
 static void gol_update_cells(gol_worker_t *worker) {
     for (int i = worker->index; i < worker->size; i += worker->gol->workers) {
         int neighbours = 0;
@@ -81,6 +100,11 @@ static void gol_update_cells(gol_worker_t *worker) {
     }
 }
 
+/**
+ * The thread function that treat the GoL with synchronisation
+ * @param t_param Worker data, containing the GoL data
+ * @return NULL
+ */
 static void *gol_work_thread(void *t_param) {
     gol_worker_t *worker = (gol_worker_t *)t_param;
     do {
@@ -101,6 +125,10 @@ static void *gol_work_thread(void *t_param) {
     return NULL;
 }
 
+/**
+ * Create the worker for parallel GoL treatment
+ * @param gol GoL data
+ */
 static void gol_start_workers(gol_t *gol) {
     gol->threads = malloc(sizeof(pthread_t) * gol->workers);
     if (gol->threads == NULL)
@@ -119,6 +147,10 @@ static void gol_start_workers(gol_t *gol) {
     }
 }
 
+/**
+ * Signal the threads to stop and wait for them to terminate gracefully
+ * @param gol GoL data
+ */
 static void gol_stop_workers(gol_t *gol) {
     gol->running = false;
 
@@ -127,6 +159,15 @@ static void gol_stop_workers(gol_t *gol) {
             perror("pthread_join gol->thread failed");
 }
 
+/**
+ * Create a GoL and launch threads
+ * @param width Grid width
+ * @param height Grid height
+ * @param seed Seed for the RNG
+ * @param alive_prob Probality to have an alive cell
+ * @param workers Number of threads that will treat the GoL
+ * @return GoL data
+ */
 gol_t *gol_create(size_t width, size_t height, double seed, double alive_prob, int workers) {
     gol_t *gol = (gol_t *)malloc(sizeof(gol_t));
     if (gol == NULL)
@@ -156,15 +197,49 @@ gol_t *gol_create(size_t width, size_t height, double seed, double alive_prob, i
     return gol;
 }
 
+/**
+ * In a given position, determine if a cell is alive
+ * @param gol GoL data
+ * @param x X coordinate
+ * @param y Y coordinate
+ * @return TRUE for alive, FALSE for dead
+ */
 bool gol_is_alive(gol_t *gol, size_t x, size_t y) {
     return gol->grid[gol_2d_to_1d(gol, x, y)];
 }
 
+/**
+ * Tell if the GoL treatment should continue
+ * @param gol GoL data
+ * @return TRUE for continue, FALSE for terminate
+ */
+bool gol_is_running(gol_t *gol) {
+    return gol->running;
+}
+
+/**
+ * ?
+ * @param gol GoL data
+ */
+void gol_work_sync(gol_t *gol) {
+    pthread_barrier_wait(&gol->finished_sync);
+}
+
+/**
+ * Get the size of a GoL
+ * @param gol GoL data
+ * @param width Memory store for the resulting width
+ * @param height Memory store for the resulting height
+ */
 void gol_get_size(gol_t *gol, size_t *width, size_t *height) {
     *width = gol->width;
     *height = gol->height;
 }
 
+/**
+ * Free all resources of a GoL
+ * @param gol GoL data
+ */
 void gol_destroy(gol_t *gol) {
     gol_stop_workers(gol);
     if (pthread_barrier_destroy(&gol->finished_sync) != 0)

@@ -8,6 +8,12 @@
 #include "keyboard.h"
 #include "gol.h"
 
+/**
+ * Initialise components and wait till the end
+ * @param argc CMD arguments count
+ * @param argv CMD arguments array
+ * @return Program status
+ */
 int main(int argc, char* argv[]) {
     if (argc < 7) {
         fprintf(stderr, "Usage: %s <width> <height> <seed> <p> <freq> <#workers>", argv[0]);
