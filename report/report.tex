@@ -15,56 +15,6 @@
 \usepackage{graphicx}
 \graphicspath{{./img/}}
 \usepackage{tikz}
-\usepackage{pgfgantt}
-\usepackage{dirtree}
-
-\usepackage{color}
-\usepackage{colortbl}
-
-\usepackage{listings}
-
-\usepackage{makeidx}
-
-\usepackage{csvsimple}
-
-% Index -----------------------------------------------------------------------
-\makeindex
-\makeatletter
-\renewenvironment{theindex}
-{
-    \thispagestyle{fancy}
-    \setlength{\parindent}{0pt}
-    \let
-    \item
-    \@idxitem
-}{\onecolumn}
-\makeatother
-
-% Listings --------------------------------------------------------------------
-\lstset{
-    basicstyle=\ttfamily\small,
-    stringstyle=\ttfamily\color{green!50!black},
-    keywordstyle=\bfseries\color{blue},
-    commentstyle=\itshape\color{red!50!black},
-    showstringspaces=true,
-    tabsize=4,
-    frame=single,
-    numbers=left,
-    numberstyle=\tiny,
-    firstnumber=1,
-    stepnumber=1,
-    numbersep=5pt,
-    breaklines=true
-}
-
-%\lstdefinelanguage{LanguageName}{
-%    keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with, prototype},
-%    morecomment=[l]{//},
-%    morecomment=[s]{/*}{*/},
-%    morestring=[b]',
-%    morestring=[b]",
-%    sensitive=true
-%}
 
 % Reset paragraph indentation -------------------------------------------------
 \setlength{\parindent}{0cm}
