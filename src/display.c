@@ -11,8 +11,8 @@
 
 struct display_t {
     struct gfx_context_t *ctxt;
-    int screen_width;
-    int screen_height;
+    size_t screen_width;
+    size_t screen_height;
     int refresh_freq;
     gol_t *gol;
 
@@ -30,37 +30,40 @@ void *display_thread(void *data) {
     do {
         time_start(&tm);
 
-        for (int x = 0; x < dp->screen_width; ++x)
-            for (int y = 0; y < dp->screen_height; ++y)
+        for (size_t x = 0; x < dp->screen_width; ++x)
+            for (size_t y = 0; y < dp->screen_height; ++y)
                 gfx_putpixel(dp->ctxt, x, y, gol_is_alive(dp->gol, x, y) ? COLOR_WHITE : COLOR_BLACK);
 
         gfx_present(dp->ctxt);
 
         time_wait_freq(&tm, dp->refresh_freq);
 
-        // printf("display -\n");
         gol_work_sync(dp->gol);
-        //printf("display --\n");
 
         if (!gol_is_running(dp->gol))
             break;
+
         gol_work_sync(dp->gol);
     } while (true);
 
     return NULL;
 }
 
+/**
+ * Create a display and launch the thread
+ * @param window_title Title of the created window
+ * @param gol Game of life to display
+ * @param refresh_freq How many times per second the screen should refresh
+ * @return Newly created display for synchonisation purpose
+ */
 display_t *display_create(char *window_title, gol_t *gol, int refresh_freq) {
     display_t *dp = malloc(sizeof(display_t));
 
     if (dp != NULL) {
-        size_t screen_width, screen_height;
-        gol_get_size(gol, &screen_width, &screen_height);
+        gol_get_size(gol, &dp->screen_width, &dp->screen_height);
 
-        dp->ctxt = gfx_create(window_title, screen_width, screen_height);
+        dp->ctxt = gfx_create(window_title, dp->screen_width, dp->screen_height);
         dp->gol = gol;
-        dp->screen_width = screen_width;
-        dp->screen_height = screen_height;
         dp->refresh_freq = refresh_freq;
 
         if (pthread_create(&dp->thread, NULL, display_thread, dp) != 0) {
@@ -73,6 +76,10 @@ display_t *display_create(char *window_title, gol_t *gol, int refresh_freq) {
     return dp;
 }
 
+/**
+ * Stop the display thread and free the resources
+ * @param dp Display to stop and free
+ */
 void display_stop(display_t *dp) {
     if (pthread_join(dp->thread, NULL) != 0) {
         perror("display thread join failed");
