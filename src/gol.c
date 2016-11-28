@@ -18,7 +18,6 @@ struct gol_t {
 
     pthread_t *threads;
     pthread_barrier_t finished_sync;
-    pthread_mutex_t *rendering_state_lock;
     bool frame_rendered;
     int workers;
     bool running;
@@ -63,19 +62,10 @@ static void gol_init(gol_t *gol, double seed, double alive_prob) {
  * @param gol GoL data
  * @param rendered ?
  */
-static void gol_set_frame_rendered_state(gol_t *gol, bool rendered) {
-    if (pthread_mutex_lock(gol->rendering_state_lock) != 0)
-        perror("pthread_mutex_lock failed");
-
-    if (rendered && !gol->frame_rendered) {
+static void gol_swap_working_grid(gol_t *gol) {
         bool *t = gol->grid;
         gol->grid = gol->temp_grid;
         gol->temp_grid = t;
-    }
-    gol->frame_rendered = rendered;
-
-    if (pthread_mutex_unlock(gol->rendering_state_lock) != 0)
-        perror("pthread_mutex_unlock failed");
 }
 
 /**
@@ -108,8 +98,6 @@ static void gol_update_cells(gol_worker_t *worker) {
 static void *gol_work_thread(void *t_param) {
     gol_worker_t *worker = (gol_worker_t *)t_param;
     do {
-        gol_set_frame_rendered_state(worker->gol, false);
-
         gol_update_cells(worker);
 
         // printf("Thread - %d\n", worker->index);
@@ -117,7 +105,9 @@ static void *gol_work_thread(void *t_param) {
         // printf("Thread -- %d\n", worker->index);
         if (!worker->gol->running)
             break;
-        gol_set_frame_rendered_state(worker->gol, true);
+        if (worker->index == 0)
+            gol_swap_working_grid(worker->gol);
+
         gol_work_sync(worker->gol);  // sync start
     } while (true);
 
@@ -180,13 +170,9 @@ gol_t *gol_create(size_t width, size_t height, double seed, double alive_prob, i
     gol->running = true;
     gol->grid = (bool *)malloc(grid_mem_size);
     gol->temp_grid = (bool *)malloc(grid_mem_size);
-    gol->rendering_state_lock = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
 
-    if (gol->grid == NULL || gol->temp_grid == NULL || gol->rendering_state_lock == NULL)
+    if (gol->grid == NULL || gol->temp_grid == NULL)
         perror("gol malloc failed");
-
-    if (pthread_mutex_init(gol->rendering_state_lock, NULL) != 0)
-        perror("pthread_mutex_init failed");
 
     if (pthread_barrier_init(&gol->finished_sync, NULL, workers + 1) != 0)
         perror("pthread_barrier_init failed");
