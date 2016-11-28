@@ -10,17 +10,16 @@
 #include "gol.h"
 
 struct gol_t {
-    // could be replaced by bitwise operations on word[]
     bool *grid;
     bool *temp_grid;
     size_t width;
     size_t height;
 
     pthread_t *threads;
-    pthread_barrier_t finished_sync;
-    bool frame_rendered;
+    pthread_barrier_t work_sync;
     int workers;
-    bool running;
+    bool stop;
+    bool request_stop;
 };
 
 typedef struct {
@@ -58,14 +57,13 @@ static void gol_init(gol_t *gol, double seed, double alive_prob) {
 }
 
 /**
- * ?
+ * Swap gol finished grid and gol working temporary
  * @param gol GoL data
- * @param rendered ?
  */
 static void gol_swap_working_grid(gol_t *gol) {
-        bool *t = gol->grid;
-        gol->grid = gol->temp_grid;
-        gol->temp_grid = t;
+    bool *t = gol->grid;
+    gol->grid = gol->temp_grid;
+    gol->temp_grid = t;
 }
 
 /**
@@ -100,10 +98,12 @@ static void *gol_work_thread(void *t_param) {
     do {
         gol_update_cells(worker);
 
-        // printf("Thread - %d\n", worker->index);
+        if (worker->gol->request_stop)
+            worker->gol->stop = true;
+
         gol_work_sync(worker->gol);  // sync end
-        // printf("Thread -- %d\n", worker->index);
-        if (!worker->gol->running)
+
+        if (worker->gol->stop)
             break;
         if (worker->index == 0)
             gol_swap_working_grid(worker->gol);
@@ -142,7 +142,7 @@ static void gol_start_workers(gol_t *gol) {
  * @param gol GoL data
  */
 static void gol_stop_workers(gol_t *gol) {
-    gol->running = false;
+    gol->request_stop = true;
 
     for (int i = 0; i < gol->workers; ++i)
         if (pthread_join(gol->threads[i], NULL) != 0)
@@ -167,14 +167,14 @@ gol_t *gol_create(size_t width, size_t height, double seed, double alive_prob, i
     gol->width = width;
     gol->height = height;
     gol->workers = workers;
-    gol->running = true;
+    gol->stop = gol->request_stop = false;
     gol->grid = (bool *)malloc(grid_mem_size);
     gol->temp_grid = (bool *)malloc(grid_mem_size);
 
     if (gol->grid == NULL || gol->temp_grid == NULL)
         perror("gol malloc failed");
 
-    if (pthread_barrier_init(&gol->finished_sync, NULL, workers + 1) != 0)
+    if (pthread_barrier_init(&gol->work_sync, NULL, workers + 1) != 0)
         perror("pthread_barrier_init failed");
 
     gol_init(gol, seed, alive_prob);
@@ -190,7 +190,7 @@ gol_t *gol_create(size_t width, size_t height, double seed, double alive_prob, i
  * @param y Y coordinate
  * @return TRUE for alive, FALSE for dead
  */
-bool gol_is_alive(gol_t *gol, size_t x, size_t y) {
+bool gol_is_cell_alive(gol_t *gol, size_t x, size_t y) {
     return gol->grid[gol_2d_to_1d(gol, x, y)];
 }
 
@@ -200,15 +200,16 @@ bool gol_is_alive(gol_t *gol, size_t x, size_t y) {
  * @return TRUE for continue, FALSE for terminate
  */
 bool gol_is_running(gol_t *gol) {
-    return gol->running;
+    return !gol->stop;
 }
 
 /**
- * ?
+ * Synchronizes all threads working on the gol grid
+ * Both for gol workers & for display thread
  * @param gol GoL data
  */
 void gol_work_sync(gol_t *gol) {
-    pthread_barrier_wait(&gol->finished_sync);
+    pthread_barrier_wait(&gol->work_sync);
 }
 
 /**
@@ -228,7 +229,7 @@ void gol_get_size(gol_t *gol, size_t *width, size_t *height) {
  */
 void gol_destroy(gol_t *gol) {
     gol_stop_workers(gol);
-    if (pthread_barrier_destroy(&gol->finished_sync) != 0)
+    if (pthread_barrier_destroy(&gol->work_sync) != 0)
         perror("pthread_barrier_destroy failed");
 
     free(gol->threads);

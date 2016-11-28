@@ -12,8 +12,6 @@
 #define DISPLAY_WINDOW_NAME "GameOfLife"
 
 struct display_t {
-    size_t screen_width;
-    size_t screen_height;
     int refresh_freq;
 
     gol_t *gol;
@@ -28,8 +26,12 @@ void *display_thread(void *data) {
     display_t *dp = (display_t *)data;
     struct timespec tm;
 
+    size_t screen_width;
+    size_t screen_height;
+    gol_get_size(dp->gol, &screen_width, &screen_height);
+
     // gfx_create() and gfx_present() must be in the same thread
-    struct gfx_context_t *ctxt = gfx_create(DISPLAY_WINDOW_NAME, dp->screen_width, dp->screen_height);
+    struct gfx_context_t *ctxt = gfx_create(DISPLAY_WINDOW_NAME, screen_width, screen_height);
     if (ctxt == NULL)
     {
         fprintf(stderr, "Display context creation failed.");
@@ -39,13 +41,11 @@ void *display_thread(void *data) {
     do {
         time_wait_start(&tm);
 
-        for (size_t x = 0; x < dp->screen_width; ++x)
-            for (size_t y = 0; y < dp->screen_height; ++y)
-                gfx_putpixel(ctxt, x, y, gol_is_alive(dp->gol, x, y) ? COLOR_WHITE : COLOR_BLACK);
+        for (size_t x = 0; x < screen_width; ++x)
+            for (size_t y = 0; y < screen_height; ++y)
+                gfx_putpixel(ctxt, x, y, gol_is_cell_alive(dp->gol, x, y) ? COLOR_WHITE : COLOR_BLACK);
 
         gfx_present(ctxt);
-
-        time_wait_freq(&tm, dp->refresh_freq);
 
         gol_work_sync(dp->gol);
 
@@ -53,6 +53,8 @@ void *display_thread(void *data) {
             break;
 
         gol_work_sync(dp->gol);
+
+        time_wait_freq(&tm, dp->refresh_freq);
     } while (true);
 
     gfx_destroy(ctxt);
@@ -70,8 +72,6 @@ display_t *display_create(gol_t *gol, int refresh_freq) {
     display_t *dp = malloc(sizeof(display_t));
 
     if (dp != NULL) {
-        gol_get_size(gol, &dp->screen_width, &dp->screen_height);
-
         dp->gol = gol;
         dp->refresh_freq = refresh_freq;
 

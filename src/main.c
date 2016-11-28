@@ -16,7 +16,8 @@
  */
 int main(int argc, char* argv[]) {
     if (argc < 7) {
-        fprintf(stderr, "Usage: %s <width> <height> <seed> <p> <freq> <#workers>", argv[0]);
+        fprintf(stderr, "Usage:   %s <width> <height> <seed> <p> <freq> <#workers>", argv[0]);
+        fprintf(stderr, "Example: %s 240 135 0 0.75 30 8", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -30,6 +31,11 @@ int main(int argc, char* argv[]) {
     if (grid_workers < 1) {
         fprintf(stderr, "'workers' must be >= 1. Defaulted to 1");
         grid_workers = 1;
+    }
+
+    if (refresh_freq < 1) {
+        fprintf(stderr, "'refresh_freq' must be >= 1. Defaulted to 1");
+        refresh_freq = 1;
     }
 
     gol_t* gol = gol_create(width, height, grid_seed, grid_p, grid_workers);
