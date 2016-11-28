@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     }
 
     gol_t* gol = gol_create(width, height, grid_seed, grid_p, grid_workers);
-    display_t* dp = display_create("GameOfLife", gol, refresh_freq);
+    display_t* dp = display_create(gol, refresh_freq);
 
     keyboard_create_and_wait_end();
 

@@ -1,8 +1,5 @@
 gol_worker_t->thread should be a pointer?
 confirm ESC to stop app
-do not expose display char * window_title,
-dispose barriers
-consider use a single barrier
 verify flow on perror. Ask prof about best practices
 add "Press ESC key to exit..."
 add in document multi-threaded flow synchronization
@@ -10,6 +7,5 @@ can use PTHREAD_BARRIER_SERIAL_THREAD?
 use memcpy in gfx graphics vector?
 ask teacher: wrap grid into globe?
 
-RACONG CONDITIONS AT BIGGER SCREEN SIZES???
-
 comment: gol_work_sync and gol_set_frame_rendered_state
+replace mutex by threadid = 0
