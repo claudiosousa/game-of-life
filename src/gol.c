@@ -64,9 +64,7 @@ static void gol_init(gol_t *gol, double seed, double alive_prob) {
 
     for (size_t y = 1; y < gol->height - 1; y++)
         for (size_t x = 1; x < gol->width - 1; x++)
-            // if ((double)rand() / RAND_MAX <= alive_prob)
-            if (rand() % 1000000 <= alive_prob * 1000000)
-
+            if ((double)rand() / RAND_MAX <= alive_prob)
                 gol->grid[gol_2d_to_1d(gol, x, y)] = true;
 }
 
