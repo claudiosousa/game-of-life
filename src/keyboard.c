@@ -22,8 +22,12 @@ void * keyboard_thread(void * data) {
     // The keyboard mustn't work before the display module has fully initialised
     display_sync_init((display_t*)data);
 
+    struct timespec tm;
+    time_wait_start(&tm);
+
     while (keyboard_utils_keypress() != SDLK_ESCAPE) {
         time_wait_freq(NULL, KEYBOARD_EXEC_WAIT_HZ);
+        time_wait_start(&tm);
     }
 
     return NULL;
