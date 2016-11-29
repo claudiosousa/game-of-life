@@ -40,7 +40,7 @@ static size_t gol_2d_to_1d(gol_t *gol, size_t x, size_t y) {
 }
 
 /**
- * Randomly initilaise a gol grid
+ * Randomly initialize a gol grid
  * @param gol GoL data
  * @param seed Seed for the RNG
  * @param alive_prob Probality to have an alive cell
@@ -246,7 +246,6 @@ void gol_stop(gol_t *gol) {
  * @param gol GoL data
  */
 void gol_free(gol_t *gol) {
-
     if (pthread_barrier_destroy(&gol->work_sync) != 0)
         perror("pthread_barrier_destroy failed");
 

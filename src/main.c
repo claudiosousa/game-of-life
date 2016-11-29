@@ -21,8 +21,6 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    const unsigned int depend_component = 1;
-
     int width = atoi(argv[1]);
     int height = atoi(argv[2]);
     int grid_seed = atoi(argv[3]);
@@ -44,12 +42,12 @@ int main(int argc, char* argv[]) {
     if (gol == NULL) {
         return EXIT_FAILURE;
     }
-    display_t* dp = display_create(gol, refresh_freq, depend_component);
+    display_t* dp = display_create(gol, refresh_freq);
     if (dp == NULL) {
         return EXIT_FAILURE;
     }
 
-    if (keyboard_create_and_wait_end(dp) != 0) {
+    if (keyboard_create_and_wait_end() != 0) {
         return EXIT_FAILURE;
     }
 

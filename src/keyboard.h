@@ -8,6 +8,6 @@
 
 #include "display.h"
 
-int keyboard_create_and_wait_end(display_t * dp);
+int keyboard_create_and_wait_end();
 
 #endif

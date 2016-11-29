@@ -1,14 +1,7 @@
 gol_worker_t->thread should be a pointer?
-confirm ESC to stop app
 verify flow on perror. Ask prof about best practices
-add "Press ESC key to exit..."
 add in document multi-threaded flow synchronization
-can use PTHREAD_BARRIER_SERIAL_THREAD?
-use memcpy in gfx graphics vector?
 ask teacher: wrap grid into globe?
-could be replaced by bitwise operations on word[]
 
-comment: gol_work_sync and gol_set_frame_rendered_state
-replace mutex by threadid = 0
 compare time diff in keyboard?
 !while(true)

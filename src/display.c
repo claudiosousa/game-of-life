@@ -33,15 +33,14 @@ void *display_thread(void *data) {
 
     // gfx_create() and gfx_present() must be in the same thread
     struct gfx_context_t *ctxt = gfx_create(DISPLAY_WINDOW_NAME, screen_width, screen_height);
-    if (ctxt == NULL)
-    {
+
+    // The gfx has been initialised, release main thread
+    pthread_barrier_wait(&dp->init_sync);
+
+    if (ctxt == NULL) {
         fprintf(stderr, "Display context creation failed.");
         return NULL;
     }
-
-    // Join the barrier in order to tell other components that
-    // the display has been fully initialised
-    display_wait_init(dp);
 
     do {
         time_wait_start(&tm);
@@ -74,7 +73,7 @@ void *display_thread(void *data) {
  * @param other_component_nb Number of component that depends on the complete initialisation of the display module
  * @return Newly created display for synchonisation purpose
  */
-display_t *display_create(gol_t *gol, int refresh_freq, unsigned int other_component_nb) {
+display_t *display_create(gol_t *gol, int refresh_freq) {
     display_t *dp = malloc(sizeof(display_t));
     if (dp == NULL) {
         perror("display malloc failed");
@@ -84,7 +83,7 @@ display_t *display_create(gol_t *gol, int refresh_freq, unsigned int other_compo
     dp->gol = gol;
     dp->refresh_freq = refresh_freq;
 
-    if (pthread_barrier_init(&dp->init_sync, NULL, other_component_nb + 1) != 0) {
+    if (pthread_barrier_init(&dp->init_sync, NULL, 2) != 0) {
         perror("display barrier init failed");
         free(dp);
         return NULL;
@@ -95,6 +94,9 @@ display_t *display_create(gol_t *gol, int refresh_freq, unsigned int other_compo
         free(dp);
         return NULL;
     }
+
+    // Wait for gfx context initialization before continueing
+    pthread_barrier_wait(&dp->init_sync);
 
     return dp;
 }
@@ -113,12 +115,4 @@ void display_stop(display_t *dp) {
     }
 
     free(dp);
-}
-
-/**
- * Make the calling components wait for the display to fully initialise
- * @param dp Display data to synchronise
- */
-void display_wait_init(display_t *dp) {
-    pthread_barrier_wait(&dp->init_sync);
 }
