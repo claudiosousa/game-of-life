@@ -20,7 +20,7 @@
  */
 void * keyboard_thread(void * data) {
     // The keyboard mustn't work before the display module has fully initialised
-    display_sync_init((display_t*)data);
+    display_wait_init((display_t*)data);
 
     struct timespec tm;
     time_wait_start(&tm);

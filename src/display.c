@@ -41,7 +41,7 @@ void *display_thread(void *data) {
 
     // Join the barrier in order to tell other component that
     // the display has been fully initialised
-    display_sync_init(dp);
+    display_wait_init(dp);
 
     do {
         time_wait_start(&tm);
@@ -116,9 +116,9 @@ void display_stop(display_t *dp) {
 }
 
 /**
- * Help the synchonisation of all element that depend on display
+ * Make the calling components wait for the display to fully initialise
  * @param dp Display data to synchronise
  */
-void display_sync_init(display_t *dp) {
+void display_wait_init(display_t *dp) {
     pthread_barrier_wait(&dp->init_sync);
 }
