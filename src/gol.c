@@ -40,6 +40,18 @@ static size_t gol_2d_to_1d(gol_t *gol, size_t x, size_t y) {
 }
 
 /**
+ * Transform a 1D coordinate into 2D
+ * @param gol GoL data
+ * @param index The 1D coordinate
+ * @param x First coordiate in 2D
+ * @param y Second coordiate in 2D
+ */
+static void gol_1d_to_2d(gol_t *gol, size_t index, size_t *x, size_t *y) {
+    *x = index % gol->width;
+    *y = index / gol->width;
+}
+
+/**
  * Randomly initialize a gol grid
  * @param gol GoL data
  * @param seed Seed for the RNG
@@ -67,20 +79,41 @@ static void gol_swap_working_grid(gol_t *gol) {
 }
 
 /**
+ * Get a cell neighbours
+ * @param gol The GoL data
+ * @param cell_index The cell index
+ * @return the number of alive neighbours, -1 if border cell
+ */
+static int gol_cell_neightbours(gol_t *gol, int cell_index) {
+    size_t initial_x, initial_y;
+
+    gol_1d_to_2d(gol, cell_index, &initial_x, &initial_y);
+    if (initial_x == 0 || initial_x == gol->width - 1 || initial_y == 0 || initial_y == gol->height - 1)
+        return -1;
+
+    int neighbours = 0;
+    for (int x = -1; x <= 1; ++x) {
+        for (int y = -1; y <= 1; ++y) {
+            if (x == 0 && y == 0)
+                continue;
+            if (gol->grid[gol_2d_to_1d(gol, initial_x + x, initial_y + y)])
+                neighbours++;
+        }
+    }
+
+    return neighbours;
+}
+
+/**
  * Update all cells by firstly getting the cell neighbours and then applying rules
  * @param worker Worker data, containing the GoL data
  */
 static void gol_update_cells(gol_worker_t *worker) {
     for (int i = worker->index; i < worker->size; i += worker->gol->workers) {
-        int neighbours = 0;
-        for (int x = -1; x <= 1; ++x) {
-            for (int y = -1; y <= 1; ++y) {
-                if (x == 0 && y == 0)
-                    continue;
-                if (worker->gol->grid[(i + y * worker->gol->width + x) % worker->size])
-                    neighbours++;
-            }
-        }
+        int neighbours = gol_cell_neightbours(worker->gol, i);
+        if (neighbours < 0)
+            continue;
+
         if (worker->gol->grid[i]) {
             worker->gol->temp_grid[i] = neighbours == 2 || neighbours == 3;
         } else
