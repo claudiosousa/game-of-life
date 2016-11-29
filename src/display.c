@@ -39,7 +39,7 @@ void *display_thread(void *data) {
         return NULL;
     }
 
-    // Join the barrier in order to tell other component that
+    // Join the barrier in order to tell other components that
     // the display has been fully initialised
     display_wait_init(dp);
 
@@ -71,7 +71,7 @@ void *display_thread(void *data) {
  * Create a display and launch the thread
  * @param gol Game of life to display
  * @param refresh_freq How many times per second the screen should refresh
- * @param other_component_nb Number of component that depend on the complete initialisation of the display module
+ * @param other_component_nb Number of component that depends on the complete initialisation of the display module
  * @return Newly created display for synchonisation purpose
  */
 display_t *display_create(gol_t *gol, int refresh_freq, unsigned int other_component_nb) {

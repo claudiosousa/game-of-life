@@ -16,7 +16,7 @@
 /**
  * Thread that check user input in order to end the program.
  * This thread tests pressed keys at 50 Hz.
- * @param data Data for synchoisation
+ * @param data Data for synchonisation
  */
 void * keyboard_thread(void * data) {
     // The keyboard mustn't work before the display module has fully initialised
@@ -35,6 +35,7 @@ void * keyboard_thread(void * data) {
 
 /**
  * Create a thread for keyboard and wait for it to end
+ * @param dp Display data for synchonisation of display initialisation
  * @return 0 for OK, 1 for NOK
  */
 int keyboard_create_and_wait_end(display_t * dp) {
