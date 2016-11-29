@@ -30,15 +30,20 @@ void * keyboard_thread(void * data) {
 
 /**
  * Create a thread for keyboard and wait for it to end
+ * @return 0 for OK, 1 for NOK
  */
-void keyboard_create_and_wait_end() {
+int keyboard_create_and_wait_end() {
     pthread_t kb_thread;
 
-    if (pthread_create(&kb_thread, NULL, keyboard_thread, NULL) == 0) {
-        if (pthread_join(kb_thread, NULL) != 0) {
-            perror("keyboard thread join failed");
-        }
-    } else {
+    if (pthread_create(&kb_thread, NULL, keyboard_thread, NULL) != 0) {
         perror("keyboard thread creation failed");
+        return 1;
     }
+
+    if (pthread_join(kb_thread, NULL) != 0) {
+        perror("keyboard thread join failed");
+        return 1;
+    }
+
+    return 0;
 }

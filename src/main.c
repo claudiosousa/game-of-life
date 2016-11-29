@@ -39,9 +39,17 @@ int main(int argc, char* argv[]) {
     }
 
     gol_t* gol = gol_create(width, height, grid_seed, grid_p, grid_workers);
+    if (gol == NULL) {
+        return EXIT_FAILURE;
+    }
     display_t* dp = display_create(gol, refresh_freq);
+    if (dp == NULL) {
+        return EXIT_FAILURE;
+    }
 
-    keyboard_create_and_wait_end();
+    if (keyboard_create_and_wait_end() != 0) {
+        return EXIT_FAILURE;
+    }
 
     gol_destroy(gol);
     display_stop(dp);

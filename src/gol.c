@@ -118,23 +118,33 @@ static void *gol_work_thread(void *t_param) {
 /**
  * Create the worker for parallel GoL treatment
  * @param gol GoL data
+ * @return 0 for OK, 1 for NOK
  */
-static void gol_start_workers(gol_t *gol) {
+static int gol_start_workers(gol_t *gol) {
     gol->threads = malloc(sizeof(pthread_t) * gol->workers);
-    if (gol->threads == NULL)
+    if (gol->threads == NULL) {
         perror("gol->threads malloc failed");
+        return 1;
+    }
 
     for (int i = 0; i < gol->workers; ++i) {
         gol_worker_t *worker = malloc(sizeof(gol_worker_t));
-        if (worker == NULL)
+        if (worker == NULL) {
             perror("worker malloc failed");
+            return 1;
+        }
+
         worker->gol = gol;
         worker->index = i;
         worker->size = gol->width * gol->height;
 
-        if (pthread_create(&gol->threads[i], NULL, gol_work_thread, worker) != 0)
+        if (pthread_create(&gol->threads[i], NULL, gol_work_thread, worker) != 0) {
             perror("gol->thread creation failed");
+            return 1;
+        }
     }
+
+    return 0;
 }
 
 /**
@@ -160,8 +170,10 @@ static void gol_stop_workers(gol_t *gol) {
  */
 gol_t *gol_create(size_t width, size_t height, double seed, double alive_prob, int workers) {
     gol_t *gol = (gol_t *)malloc(sizeof(gol_t));
-    if (gol == NULL)
+    if (gol == NULL) {
         perror("gol_t malloc failed");
+        return NULL;
+    }
 
     size_t grid_mem_size = sizeof(bool) * width * height;
     gol->width = width;
@@ -171,14 +183,20 @@ gol_t *gol_create(size_t width, size_t height, double seed, double alive_prob, i
     gol->grid = (bool *)malloc(grid_mem_size);
     gol->temp_grid = (bool *)malloc(grid_mem_size);
 
-    if (gol->grid == NULL || gol->temp_grid == NULL)
+    if (gol->grid == NULL || gol->temp_grid == NULL) {
         perror("gol malloc failed");
+        return NULL;
+    }
 
-    if (pthread_barrier_init(&gol->work_sync, NULL, workers + 1) != 0)
+    if (pthread_barrier_init(&gol->work_sync, NULL, workers + 1) != 0) {
         perror("pthread_barrier_init failed");
+        return NULL;
+    }
 
     gol_init(gol, seed, alive_prob);
-    gol_start_workers(gol);
+    if (gol_start_workers(gol) != 0) {
+        return NULL;
+    }
 
     return gol;
 }

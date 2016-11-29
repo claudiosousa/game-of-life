@@ -70,16 +70,18 @@ void *display_thread(void *data) {
  */
 display_t *display_create(gol_t *gol, int refresh_freq) {
     display_t *dp = malloc(sizeof(display_t));
-
-    if (dp != NULL) {
-        dp->gol = gol;
-        dp->refresh_freq = refresh_freq;
-
-        if (pthread_create(&dp->thread, NULL, display_thread, dp) != 0) {
-            perror("display thread creation failed");
-        }
-    } else {
+    if (dp == NULL) {
         perror("display malloc failed");
+        return NULL;
+    }
+
+    dp->gol = gol;
+    dp->refresh_freq = refresh_freq;
+
+    if (pthread_create(&dp->thread, NULL, display_thread, dp) != 0) {
+        perror("display thread creation failed");
+        free(dp);
+        return NULL;
     }
 
     return dp;
