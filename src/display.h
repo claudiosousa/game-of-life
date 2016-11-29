@@ -10,7 +10,8 @@
 
 typedef struct display_t display_t;
 
-display_t *display_create(gol_t *gol, int refresh_freq);
+display_t *display_create(gol_t *gol, int refresh_freq, unsigned int other_component_nb);
 void display_stop(display_t *dp);
+void display_sync_init(display_t *dp);
 
 #endif

@@ -19,7 +19,8 @@
  * @param data Data for synchoisation
  */
 void * keyboard_thread(void * data) {
-    (void)data;
+    // The keyboard mustn't work before the display module has fully initialised
+    display_sync_init((display_t*)data);
 
     while (keyboard_utils_keypress() != SDLK_ESCAPE) {
         time_wait_freq(NULL, KEYBOARD_EXEC_WAIT_HZ);
@@ -32,10 +33,10 @@ void * keyboard_thread(void * data) {
  * Create a thread for keyboard and wait for it to end
  * @return 0 for OK, 1 for NOK
  */
-int keyboard_create_and_wait_end() {
+int keyboard_create_and_wait_end(display_t * dp) {
     pthread_t kb_thread;
 
-    if (pthread_create(&kb_thread, NULL, keyboard_thread, NULL) != 0) {
+    if (pthread_create(&kb_thread, NULL, keyboard_thread, dp) != 0) {
         perror("keyboard thread creation failed");
         return 1;
     }

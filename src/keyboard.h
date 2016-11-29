@@ -6,6 +6,8 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-int keyboard_create_and_wait_end();
+#include "display.h"
+
+int keyboard_create_and_wait_end(display_t * dp);
 
 #endif
