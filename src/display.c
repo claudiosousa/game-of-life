@@ -42,6 +42,7 @@ void *display_thread(void *data) {
         return NULL;
     }
 
+    int i = 0;
     do {
         time_wait_start(&tm);
 

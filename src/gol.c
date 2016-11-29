@@ -62,9 +62,11 @@ static void gol_init(gol_t *gol, double seed, double alive_prob) {
 
     memset(gol->grid, 0, gol->width * gol->height * sizeof(bool));
 
-    for (size_t x = 1; x < gol->width - 1; x++)
-        for (size_t y = 1; y < gol->height - 1; y++)
-            if ((double)rand() / RAND_MAX <= alive_prob)
+    for (size_t y = 1; y < gol->height - 1; y++)
+        for (size_t x = 1; x < gol->width - 1; x++)
+            // if ((double)rand() / RAND_MAX <= alive_prob)
+            if (rand() % 1000000 <= alive_prob * 1000000)
+
                 gol->grid[gol_2d_to_1d(gol, x, y)] = true;
 }
 
