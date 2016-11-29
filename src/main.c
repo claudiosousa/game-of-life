@@ -53,8 +53,10 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    gol_destroy(gol);
+    gol_stop(gol);
     display_stop(dp);
+
+    gol_free(gol);
 
     return EXIT_SUCCESS;
 }

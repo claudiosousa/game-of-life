@@ -15,6 +15,7 @@ bool gol_is_cell_alive(gol_t *gol, size_t x, size_t y);
 bool gol_is_running(gol_t *gol);
 void gol_work_sync(gol_t *gol);
 void gol_get_size(gol_t *gol, size_t *x, size_t *y);
-void gol_destroy(gol_t *gol);
+void gol_stop(gol_t *gol);
+void gol_free(gol_t *gol);
 
 #endif

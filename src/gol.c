@@ -148,18 +148,6 @@ static int gol_start_workers(gol_t *gol) {
 }
 
 /**
- * Signal the threads to stop and wait for them to terminate gracefully
- * @param gol GoL data
- */
-static void gol_stop_workers(gol_t *gol) {
-    gol->request_stop = true;
-
-    for (int i = 0; i < gol->workers; ++i)
-        if (pthread_join(gol->threads[i], NULL) != 0)
-            perror("pthread_join gol->thread failed");
-}
-
-/**
  * Create a GoL and launch threads
  * @param width Grid width
  * @param height Grid height
@@ -242,11 +230,23 @@ void gol_get_size(gol_t *gol, size_t *width, size_t *height) {
 }
 
 /**
+ * Signal the threads to stop and wait for them to terminate gracefully
+ * @param gol GoL data
+ */
+void gol_stop(gol_t *gol) {
+    gol->request_stop = true;
+
+    for (int i = 0; i < gol->workers; ++i)
+        if (pthread_join(gol->threads[i], NULL) != 0)
+            perror("pthread_join gol->thread failed");
+}
+
+/**
  * Free all resources of a GoL
  * @param gol GoL data
  */
-void gol_destroy(gol_t *gol) {
-    gol_stop_workers(gol);
+void gol_free(gol_t *gol) {
+
     if (pthread_barrier_destroy(&gol->work_sync) != 0)
         perror("pthread_barrier_destroy failed");
 
