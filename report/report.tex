@@ -64,6 +64,9 @@
 \section{Introduction}
 \subsection{Énoncé}
 
+esc key
+rappel regles
+
 \newpage
 
 % -----------------------------------------------------------------------------
@@ -78,15 +81,48 @@
     \label{Architecture du Game of Life}
 \end{figure}
 
+liste des threads
+
+\subsection{Algorithmie}
+
+\subsubsection{Répartition du travail entre les threads du GoL}
+
+\subsubsection{SDL}
+
+\subsubsection{Swap}
+
 \newpage
 
 % -----------------------------------------------------------------------------
 \subsection{Concurrence et parallélisme}
-\subsubsection{Traitement du Game of Life}
 
-\subsubsection{Affichage}
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=\textwidth]{workers_flow_diagram.png}
+	\end{center}
+	\caption{Synchronisation du traitement et de l'affichage}
+	\label{Synchronisation du traitement et de l'affichage}
+\end{figure}
 
-\subsubsection{Terminaison}
+\subsubsection{Synchronisation du traitement et de l'affichage}
+
+Les flèches à gauche du schéma symbolise les threads, \textit{n} threads pour le traitement de la grille (haut) et le thread pour l'affichage de cette grille (en bas). \\
+
+Tous les threads sont synchornisés à deux endroits, symbolisés par deux barres rouges verticales:
+\begin{itemize}
+	\item \textit{frame\_done} synchronise tous les threads à la fin du traitement de l'état actuel de la grille.
+	\item \textit{frame\_ready} s'assure que tous les threads attendent que la grille suivante soit prête à être traitée.
+\end{itemize}
+
+\subsubsection{Condition de sortie}
+
+Lorsque la touche \textit{ESC} est pressée, le thread du clavier se termine et libère le thread principal. Celui-ci met la variable \textit{request\_finish} à \textit{true} et attend que tous les threads se termine. \\
+
+Les threads du traitement de la grille vérifient cette variable avant la barrière \textit{frame\_done} et, le cas échéant, mettent une autre variable \textit{finished} à \textit{true}. Après \textit{frame\_done}, chaque thread vérifie l'état de cette variable et se termine s'elle est mise à \textit{true}. \\
+
+L'utilisaton de deux variables, et surtout la separation entre l'écriture et la lecture de \textit{finish}, permet de s'assurer que sa valeur sera la même pour tous les threads entre \textit{frame\_done} et \textit{frame\_ready}. \\
+
+La fin des threads redonne la main au thread principal qui libère les ressources du programme.
 
 \newpage
 
