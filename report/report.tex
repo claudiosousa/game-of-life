@@ -62,10 +62,28 @@
 
 % -----------------------------------------------------------------------------
 \section{Introduction}
-\subsection{Énoncé}
 
-esc key
-rappel regles
+Ce TP de deuxième année consiste à implémenter un Game of Live (jeux de la vie).
+La particularité de celui-ci est que tous modules doit s'exécuter en parallèle. \\
+
+Les modules concernés sont:
+
+\begin{itemize}
+    \item gestion du clavier (un thread);
+    \item gestion d'affichage (un thread);
+    \item gestion de la grille du Game of Life (un ou plusieurs threads). \\
+\end{itemize}
+
+Le traitement de la grille suit des règles selon 2 paramètres:
+
+\begin{itemize}
+    \item l'état de la cellule: morte ou vivante;
+    \item le nombre de voisins. \\
+\end{itemize}
+
+Ainsi, une cellule vivante meure seulement si elle a 0, 1, ou plus de 3 voisins.
+
+Une cellule morte revit seulement si elle a exactement 3 voisins.
 
 \newpage
 
@@ -81,20 +99,48 @@ rappel regles
     \label{Architecture du Game of Life}
 \end{figure}
 
-liste des threads
+L'architecture du Game of Life est divisée en 5 modules. \\
+
+Le module \textit{main} est le programme principal.
+Il a pour rôle de:
+
+\begin{itemize}
+    \item récupérer les paramètres de ligne de commande;
+    \item initialiser et lancer les threads des différents modules;
+    \item stopper et libérer les modules lorsque demandé. \\
+\end{itemize}
+
+Le module \textit{time\_wait} permet simplement a un thread
+de se synchroniser avec une fréquence de fonctionnement (en herz). \\
+
+Le module \textit{display} contient le thread qui s'occupe de l'affichage.
+
+Il a la responsabilité d'initialiser la librairie SDL à l'intérieur du thread.
+Afin de permettre à d'autre module d'utiliser la SDL, une barrière est utilisée et est joint deux fois:
+
+\begin{itemize}
+    \item une fois par le thread d'affiche après l'initialisation de la SDL;
+    \item une fois par le thread principal après avoir lancé le thread d'affichage.
+\end{itemize}
+
+Ceci permet d'empêcher le thread principal de continuer avant que la SDL ne soit initialisée. \\
+
+Le module \textit{keyboard} est également un thread qui a pour seul rôle de bloquer le thread principal
+tant que la touche \textit{ESC} n'a pas été pressée.
+Pour cela, le thread principal lance le thread du clavier puis attend sa fin en le joignant immédiatement après l'avoir lancé. \\
+
+Le module \textit{gol} contient l'ensemble de l'algorithme qui permet de traiter la grille en parallèle...
 
 \subsection{Algorithmie}
 
 \subsubsection{Répartition du travail entre les threads du GoL}
-
-\subsubsection{SDL}
 
 \subsubsection{Swap}
 
 \newpage
 
 % -----------------------------------------------------------------------------
-\subsection{Concurrence et parallélisme}
+\subsection{Concurrence}
 
 \begin{figure}[H]
 	\begin{center}
