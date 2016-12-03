@@ -29,12 +29,12 @@ int main(int argc, char* argv[]) {
     int grid_workers = atoi(argv[6]);
 
     if (grid_workers < 1) {
-        fprintf(stderr, "'workers' must be >= 1. Defaulted to 1");
+        fprintf(stderr, "'workers' must be >= 1. Defaulted to 1\n");
         grid_workers = 1;
     }
 
     if (refresh_freq < 1) {
-        fprintf(stderr, "'refresh_freq' must be >= 1. Defaulted to 1");
+        fprintf(stderr, "'refresh_freq' must be >= 1. Defaulted to 1\n");
         refresh_freq = 1;
     }
 
