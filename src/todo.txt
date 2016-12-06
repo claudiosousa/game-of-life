@@ -1,4 +1,0 @@
-verify flow on perror. Ask prof about best practices
-
-compare time diff in keyboard?
-!while(true)
