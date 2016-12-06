@@ -124,7 +124,7 @@ static void gol_update_cells(gol_worker_t *worker) {
 /**
  * The thread function that treat the GoL with synchronisation
  * @param t_param Worker data, containing the GoL data
- * @return NULL
+ * @return None
  */
 static void *gol_work_thread(void *t_param) {
     gol_worker_t *worker = (gol_worker_t *)t_param;

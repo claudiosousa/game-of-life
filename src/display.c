@@ -22,6 +22,7 @@ struct display_t {
 /**
  * Display thread that show the current generated gol
  * @param data Display data
+ * @return None
  */
 void *display_thread(void *data) {
     display_t *dp = (display_t *)data;

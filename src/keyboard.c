@@ -17,6 +17,7 @@
  * Thread that check user input in order to end the program.
  * This thread tests pressed keys at 50 Hz.
  * @param data None
+ * @return None
  */
 void* keyboard_thread(void* data) {
     (void)data;

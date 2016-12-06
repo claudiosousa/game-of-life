@@ -16,8 +16,8 @@
  */
 int main(int argc, char* argv[]) {
     if (argc < 7) {
-        fprintf(stderr, "Usage:   %s <width> <height> <seed> <p> <freq> <#workers>", argv[0]);
-        fprintf(stderr, "Example: %s 240 135 0 0.75 30 8", argv[0]);
+        fprintf(stderr, "Usage:   %s <width> <height> <seed> <p> <freq> <#workers>\n", argv[0]);
+        fprintf(stderr, "Example: %s 240 135 0 0.75 30 8\n", argv[0]);
         return EXIT_FAILURE;
     }
 
