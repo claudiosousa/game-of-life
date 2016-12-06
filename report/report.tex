@@ -64,7 +64,7 @@
 \section{Introduction}
 
 Ce TP de deuxième année consiste à implémenter le Game of Live (par Conway).
-La particularité de celui-ci est que tous modules doivent s'exécuter en parallèle. \\
+La particularité de celui-ci est que tous les modules doivent s'exécuter en parallèle. \\
 
 Les modules concernés sont:
 
@@ -101,18 +101,21 @@ Une cellule morte revit seulement si elle a exactement 3 voisins.
 
 L'architecture du Game of Life est divisée en 5 modules. \\
 
+\subsubsection{Main}
 Le module \textit{main} est le programme principal.
 Il a pour rôle de:
 
 \begin{itemize}
     \item récupérer les paramètres de ligne de commande;
     \item initialiser et lancer les threads des différents modules;
-    \item stopper et libérer les modules lorsque demandé. \\
+    \item stopper les threads et libérer la mémoire des modules lorsque demandé. \\
 \end{itemize}
 
+\subsubsection{TimeWait}
 Le module \textit{time\_wait} permet simplement a un thread
 de se synchroniser avec une fréquence de fonctionnement (en herz). \\
 
+\subsubsection{Affichage}
 Le module \textit{display} contient le thread qui s'occupe de l'affichage.
 
 Il a la responsabilité d'initialiser la librairie SDL à l'intérieur du thread.
@@ -125,17 +128,13 @@ Afin de permettre à d'autres modules d'utiliser la SDL, une barrière est utili
 
 Ceci permet d'empêcher le thread principal de continuer avant que la SDL ne soit initialisée. \\
 
+\subsubsection{Clavier}
 Le module \textit{keyboard} contient également un thread qui a pour seul rôle de bloquer le thread principal
 tant que la touche \textit{ESC} n'a pas été pressée.
 Pour cela, le thread principal lance le thread du clavier puis attend sa fin en le joignant immédiatement après l'avoir lancé. \\
 
+\subsubsection{GameOfLife}
 Le module \textit{gol} contient l'ensemble de l'algorithme qui permet de traiter la grille en parallèle...
-
-\subsection{Algorithmie}
-
-\subsubsection{Répartition du travail entre les threads du GoL}
-
-\subsubsection{Swap}
 
 \newpage
 
@@ -175,6 +174,23 @@ La fin des threads redonne la main au thread principal qui libère les ressource
 % -----------------------------------------------------------------------------
 \subsection{Méthodologie de travail}
 \subsubsection{Répartition du travail}
+
+Ce travail a été effectué à deux.
+
+Nous avons commencés par réfléchir sur papier sur deux éléments:
+
+\begin{itemize}
+    \item architecture du programme: modules et interfaces de bases;
+    \item premier jet de synchronisation entre les différents threads. \\
+\end{itemize}
+
+Ensuite, le travail a été réparti ainsi:
+\begin{itemize}
+    \item le premier collaborateur a fait le module du \textit{GameOfLife}.
+    \item le deuxième collaborateur a fait les modules restant: \textit{Main}, \textit{Clavier}, \textit{Affichage} et \textit{TimeWait}. \\
+\end{itemize}
+
+Finalement, nous avons mis en commun les modules et finalisés la synchronisation des threads des différents modules.
 
 \newpage
 
