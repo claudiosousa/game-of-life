@@ -1,7 +1,7 @@
 \documentclass[11pt, a4paper]{article}
 
 % Packages
-\usepackage[francais]{babel}
+\usepackage[french]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
@@ -134,12 +134,34 @@ tant que la touche \textit{ESC} n'a pas été pressée.
 Pour cela, le thread principal lance le thread du clavier puis attend sa fin en le joignant immédiatement après l'avoir lancé. \\
 
 \subsubsection{GameOfLife}
-Le module \textit{gol} contient l'ensemble de l'algorithme qui permet de traiter la grille en parallèle...
+Le module \textit{gol} contient l'ensemble de l'algorithme qui permet de traiter la grille en parallèle. En particulier, il:
+
+\begin{itemize}
+	\item initialise la grille originalle en fonction de la graine et la probabilité d'une cellule vivante spécifiés par l'utilisateur;
+	\item offre les méthodes publiques d'accès au tableau (\textit{gol\_is\_cell\_alive} et \textit{gol\_get\_size});
+	\item permet de synchroniser l'affichage avec les débuts et fins des traitements de la grille (\textit{gol\_work\_sync});
+	\item expose l'état de fin de jeu (\textit{gol\_is\_running}).
+\end{itemize}
+
+\paragraphnl{Mémoire}
+La grille symbolisant l'état du jeu est un tableau boolean d'une dimension. Un deuxième tableau similaire est aussi alloué comme mémoire de travail temporaire.
+
+\paragraphnl{Calcul de l'état suivant}
+Dans ce module, plusieurs threads calculent l'état \textit{t+1} à partir de l'état actuel \textit{t}. Simultanement, le thread d'affichage met les pixels \textit{GFX} d'après le tableau actuel.
+
+\paragraphnl{Échange des grilles de travail}
+Les threads calculant l'état suivant de la grille et le thread d'affichage sont synchronisés une fois leur travail sur le tableau actuel est fini. Après cette synchronization, un worker thread va échanger les pointers des tableaux \textit{t} et \textit{t+1}. Une fois cette opération faite, tous les threads synchronisent une fois de plus et commencer a traiter le nouvel état de la grille.
+
+\paragraphnl{Condition de sortie}
+La méthode \textit{gol\_stop} du module permet à un thread extérieur d'arrêter le travail du \textit{gol}. Cette méthode met un flag interne \textit{request\_stop} à \textit{true}, notifiant les threads qu'il est temps d'arrêter et attends que ces threads se terminent avec \textit{pthread\_join}.
+
+La synchronisation des threads avec ce flag est expliquée plus en détail dans le chapitre \ref{concurrence} \hyperref[concurrence]{Concurrence}.
 
 \newpage
 
 % -----------------------------------------------------------------------------
 \subsection{Concurrence}
+\label{concurrence}
 
 \begin{figure}[H]
 	\begin{center}
@@ -172,8 +194,8 @@ La fin des threads redonne la main au thread principal qui libère les ressource
 \newpage
 
 % -----------------------------------------------------------------------------
-\subsection{Méthodologie de travail}
-\subsubsection{Répartition du travail}
+\section{Méthodologie de travail}
+\subsection{Répartition du travail}
 
 Ce travail a été effectué à deux.
 
