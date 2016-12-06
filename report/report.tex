@@ -47,13 +47,13 @@
 }
 \author
 {
-    \LARGE{Claudio Sousa - David Gonzalez}
+    \LARGE{David Gonzalez - Claudio Sousa}
 }
 \date{11 décembre 2016}
 \maketitle
 
 \begin{center}
-    Image...%\includegraphics[scale=0.5]{image}
+    \includegraphics[scale=0.27]{logo.png}
 \end{center}
 
 \thispagestyle{empty}
@@ -63,8 +63,8 @@
 % -----------------------------------------------------------------------------
 \section{Introduction}
 
-Ce TP de deuxième année consiste à implémenter un Game of Live (jeux de la vie).
-La particularité de celui-ci est que tous modules doit s'exécuter en parallèle. \\
+Ce TP de deuxième année consiste à implémenter le Game of Live (par Conway).
+La particularité de celui-ci est que tous modules doivent s'exécuter en parallèle. \\
 
 Les modules concernés sont:
 
@@ -78,7 +78,7 @@ Le traitement de la grille suit des règles selon 2 paramètres:
 
 \begin{itemize}
     \item l'état de la cellule: morte ou vivante;
-    \item le nombre de voisins. \\
+    \item le nombre de voisins vivants. \\
 \end{itemize}
 
 Ainsi, une cellule vivante meure seulement si elle a 0, 1, ou plus de 3 voisins.
@@ -116,16 +116,16 @@ de se synchroniser avec une fréquence de fonctionnement (en herz). \\
 Le module \textit{display} contient le thread qui s'occupe de l'affichage.
 
 Il a la responsabilité d'initialiser la librairie SDL à l'intérieur du thread.
-Afin de permettre à d'autre module d'utiliser la SDL, une barrière est utilisée et est joint deux fois:
+Afin de permettre à d'autres modules d'utiliser la SDL, une barrière est utilisée et est jointe deux fois:
 
 \begin{itemize}
-    \item une fois par le thread d'affiche après l'initialisation de la SDL;
+    \item une fois par le thread d'affichage après l'initialisation de la SDL;
     \item une fois par le thread principal après avoir lancé le thread d'affichage.
 \end{itemize}
 
 Ceci permet d'empêcher le thread principal de continuer avant que la SDL ne soit initialisée. \\
 
-Le module \textit{keyboard} est également un thread qui a pour seul rôle de bloquer le thread principal
+Le module \textit{keyboard} contient également un thread qui a pour seul rôle de bloquer le thread principal
 tant que la touche \textit{ESC} n'a pas été pressée.
 Pour cela, le thread principal lance le thread du clavier puis attend sa fin en le joignant immédiatement après l'avoir lancé. \\
 
@@ -152,9 +152,9 @@ Le module \textit{gol} contient l'ensemble de l'algorithme qui permet de traiter
 
 \subsubsection{Synchronisation du traitement et de l'affichage}
 
-Les flèches à gauche du schéma symbolise les threads, \textit{n} threads pour le traitement de la grille (haut) et le thread pour l'affichage de cette grille (en bas). \\
+Les flèches à gauche du schéma symbolisent les threads, \textit{n} threads pour le traitement de la grille (haut) et le thread pour l'affichage de cette grille (en bas). \\
 
-Tous les threads sont synchornisés à deux endroits, symbolisés par deux barres rouges verticales:
+Tous les threads sont synchronisés à deux endroits, symbolisés par deux barres rouges verticales:
 \begin{itemize}
 	\item \textit{frame\_done} synchronise tous les threads à la fin du traitement de l'état actuel de la grille.
 	\item \textit{frame\_ready} s'assure que tous les threads attendent que la grille suivante soit prête à être traitée.
@@ -162,7 +162,7 @@ Tous les threads sont synchornisés à deux endroits, symbolisés par deux barre
 
 \subsubsection{Condition de sortie}
 
-Lorsque la touche \textit{ESC} est pressée, le thread du clavier se termine et libère le thread principal. Celui-ci met la variable \textit{request\_finish} à \textit{true} et attend que tous les threads se termine. \\
+Lorsque la touche \textit{ESC} est pressée, le thread du clavier se termine et libère le thread principal. Celui-ci met la variable \textit{request\_finish} à \textit{true} et attend que tous les threads se terminent. \\
 
 Les threads du traitement de la grille vérifient cette variable avant la barrière \textit{frame\_done} et, le cas échéant, mettent une autre variable \textit{finished} à \textit{true}. Après \textit{frame\_done}, chaque thread vérifie l'état de cette variable et se termine s'elle est mise à \textit{true}. \\
 
