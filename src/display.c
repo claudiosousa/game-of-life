@@ -34,17 +34,17 @@ void *display_thread(void *data) {
     // gfx_create() and gfx_present() must be in the same thread
     struct gfx_context_t *ctxt = gfx_create(DISPLAY_WINDOW_NAME, screen_width, screen_height);
 
-    // The gfx has been initialised, release main thread
-    pthread_barrier_wait(&dp->init_sync);
-
     if (ctxt == NULL) {
         fprintf(stderr, "Display context creation failed.");
         return NULL;
     }
 
-    do {
-        time_wait_start(&tm);
+    // The gfx has been initialised, release main thread
+    pthread_barrier_wait(&dp->init_sync);
 
+    time_wait_start(&tm);
+
+    do {
         for (size_t x = 0; x < screen_width; ++x)
             for (size_t y = 0; y < screen_height; ++y)
                 gfx_putpixel(ctxt, x, y, gol_is_cell_alive(dp->gol, x, y) ? COLOR_WHITE : COLOR_BLACK);

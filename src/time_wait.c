@@ -27,17 +27,15 @@ void time_wait_freq(struct timespec *start_time, int frequency) {
     int wait_time = MICROSECONDS_IN_SECOND / frequency;
     struct timespec end_time;
 
-    if (start_time != NULL) {
-        if (clock_gettime(CLOCK_MONOTONIC, &end_time) == 0) {
-            wait_time -= (end_time.tv_sec - start_time->tv_sec) * MICROSECONDS_IN_SECOND;
-            wait_time -= (end_time.tv_nsec - start_time->tv_nsec) / 1000;
-        }
-        else {
-            perror("Time stop failed");
-        }
+    if (clock_gettime(CLOCK_MONOTONIC, &end_time) == 0) {
+        wait_time -= (end_time.tv_sec - start_time->tv_sec) * MICROSECONDS_IN_SECOND;
+        wait_time -= (end_time.tv_nsec - start_time->tv_nsec) / 1000;
+    } else {
+        perror("Time stop failed");
     }
 
     if (wait_time > 0) {
         usleep(wait_time);
     }
+    time_wait_start(start_time);
 }

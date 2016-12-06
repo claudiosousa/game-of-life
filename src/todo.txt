@@ -1,7 +1,4 @@
-gol_worker_t->thread should be a pointer?
 verify flow on perror. Ask prof about best practices
-add in document multi-threaded flow synchronization
-ask teacher: wrap grid into globe?
 
 compare time diff in keyboard?
 !while(true)

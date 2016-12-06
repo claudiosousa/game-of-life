@@ -24,9 +24,8 @@ void* keyboard_thread(void* data) {
     time_wait_start(&tm);
 
     while (keyboard_utils_keypress() != SDLK_ESCAPE) {
-        time_wait_freq(NULL, KEYBOARD_EXEC_WAIT_HZ);
-        time_wait_start(&tm);
-    }
+        time_wait_freq(&tm, KEYBOARD_EXEC_WAIT_HZ);
+     }
 
     return NULL;
 }
